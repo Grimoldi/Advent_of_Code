@@ -142,7 +142,7 @@ def second_question() -> None:
     for move in moves:
         queues = make_move_cratemover_9001(move, queues)
     print_stacks_top(queues)
-    print(f"\Second question answer. The top of each stack is: {queues}")
+    print(f"\nSecond question answer. The top of each stack is: {queues}")
 
 
 def main() -> None:

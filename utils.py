@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 
 BASE_PATH = Path(__file__).parent
-print(BASE_PATH)
 
 
 def load_input_data(day: str, debug: bool = False) -> list[str]:
