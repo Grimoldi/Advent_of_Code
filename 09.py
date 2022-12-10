@@ -15,7 +15,7 @@ class Position:
     y: int
 
     def set_position(self, new_x: int, new_y: int) -> None:
-        """Setter method"""
+        """Setter method."""
         self.x = new_x
         self.y = new_y
 
@@ -37,7 +37,7 @@ class Knot:
         return self.position
 
     def add_visited_point(self, pos: tuple[int, int]) -> None:
-        """Setter method"""
+        """Setter method."""
         self.visited.add(pos)
 
 
@@ -52,7 +52,7 @@ class Direction(Enum):
 
 @dataclass
 class Move:
-    """Represent a possible move of the knots."""
+    """Represent a possible move of the knot."""
 
     direction: Direction
     steps: int
@@ -63,7 +63,7 @@ class Grid:
     """Represent the grid on which the knots will move."""
 
     def set_cell_to_visited(self, knot: Knot, debug: bool = False) -> None:
-        """Sets a cell as visited."""
+        """Add a position to the knot as visited."""
         pos = knot.get_position()
         knot.add_visited_point((pos.x, pos.y))
         if debug:
@@ -80,21 +80,19 @@ class Grid:
 
     def move_head(self, direction: Direction, head: Knot) -> None:
         """Moves the head."""
-        current_position = head.get_position()
-
         if direction == Direction.UP:
-            head.update_position(current_position.x, current_position.y - 1)
+            self._move_up(head)
         elif direction == Direction.DOWN:
-            head.update_position(current_position.x, current_position.y + 1)
+            self._move_down(head)
         elif direction == Direction.LEFT:
-            head.update_position(current_position.x - 1, current_position.y)
+            self._move_left(head)
         elif direction == Direction.RIGHT:
-            head.update_position(current_position.x + 1, current_position.y)
+            self._move_right(head)
         else:
             raise ValueError(f"Unable to move to the {direction.name}!")
 
     def move_tail(self, head: Knot, tail: Knot) -> None:
-        """Moves the tail."""
+        """Move the tail according to head position."""
         head_pos = head.get_position()
         tail_pos = tail.get_position()
 
@@ -113,29 +111,29 @@ class Grid:
         elif move_down:
             self._move_down(tail)
 
-    def _move_right(self, tail: Knot) -> None:
-        """Move tail to the righ."""
-        current_pos = tail.get_position()
+    def _move_right(self, knot: Knot) -> None:
+        """Move the knot to the righ."""
+        current_pos = knot.get_position()
         new_x = current_pos.x + 1
-        tail.update_position(new_x, current_pos.y)
+        knot.update_position(new_x, current_pos.y)
 
-    def _move_left(self, tail: Knot) -> None:
-        """Move tail to the left."""
-        current_pos = tail.get_position()
+    def _move_left(self, knot: Knot) -> None:
+        """Move the knot to the left."""
+        current_pos = knot.get_position()
         new_x = current_pos.x - 1
-        tail.update_position(new_x, current_pos.y)
+        knot.update_position(new_x, current_pos.y)
 
-    def _move_up(self, tail: Knot) -> None:
-        """Move tail to the up."""
-        current_pos = tail.get_position()
+    def _move_up(self, knot: Knot) -> None:
+        """Move the knot up."""
+        current_pos = knot.get_position()
         new_y = current_pos.y + 1
-        tail.update_position(current_pos.x, new_y)
+        knot.update_position(current_pos.x, new_y)
 
-    def _move_down(self, tail: Knot) -> None:
-        """Move tail to the down."""
-        current_pos = tail.get_position()
+    def _move_down(self, knot: Knot) -> None:
+        """Move the knot down."""
+        current_pos = knot.get_position()
         new_y = current_pos.y - 1
-        tail.update_position(current_pos.x, new_y)
+        knot.update_position(current_pos.x, new_y)
 
 
 def get_move(line: str) -> Move:
