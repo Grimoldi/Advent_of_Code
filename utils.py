@@ -5,7 +5,7 @@ BASE_PATH = Path(__file__).parent
 
 
 def load_input_data(day: str, debug: bool = False) -> list[str]:
-    """Load all matches from a file."""
+    """Load all data from a file."""
     data_file = f"{day}_input.txt"
     if debug:
         data_file = f"{day}_example.txt"

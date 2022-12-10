@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import pprint
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from utils import load_input_data
 
