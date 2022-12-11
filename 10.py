@@ -92,7 +92,7 @@ def get_moves(debug: bool = False) -> list[Move]:
 
 def print_crt(cycle: int, register_value: int, debug: bool = False) -> None:
     """Prints a # or a . on the screen."""
-    horizontal_position = cycle - ((cycle // 40) * 40) - 1
+    horizontal_position = cycle - ((cycle // CRT_WIDTH) * CRT_WIDTH) - 1
     is_sprite_in_position = (
         horizontal_position - 1 <= register_value <= horizontal_position + 1
     )
@@ -152,7 +152,6 @@ def second_question(debug: bool = False) -> None:
     cpu = ElvesCPU()
     stop = False
     for index, move in enumerate(moves):
-        # print(f"{move.operation.name}")
         is_busy = cpu.get_busy()
         while is_busy:
             # values operations
@@ -167,7 +166,6 @@ def second_question(debug: bool = False) -> None:
             is_busy = cpu.get_busy()
 
             if cycle == CRT_RESOLUTION:
-                # if cycle == 40:
                 stop = True
                 break
 
