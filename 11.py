@@ -13,6 +13,15 @@ DAY = os.path.basename(__file__).split(".")[0]
 class Strategy:
     divisible_test: int
     operation: str
+    lmc: int = field(init=False)
+
+    def set_lmc(self, lmc: int) -> None:
+        """Setter method."""
+        self.lmc = lmc
+
+    def get_lmc(self) -> int:
+        """Getter method."""
+        return self.lmc
 
 
 @dataclass
@@ -26,7 +35,6 @@ class Monkey:
     business_score: int
     items: list[int] = field(default_factory=list)
     debug: bool = False
-    lmc: int = field(init=False)
 
     def add_true_friend(self, monkey: Monkey) -> None:
         """Setter method."""
@@ -42,7 +50,7 @@ class Monkey:
 
     def add_lmc(self, lmc: int) -> None:
         """Setter method."""
-        self.lmc = lmc
+        self.strategy.set_lmc(lmc)
 
     def get_business_score(self) -> int:
         """Getter method."""
@@ -52,6 +60,7 @@ class Monkey:
         """Monkey plays a round."""
         if self.debug:
             print(f"\tMonkey {self.name} has items {[x for x in self.items]}.\n")
+
         for self._item in self.items:
             new_worry_level = self._inspect_item()
             if should_i_worry:
@@ -69,10 +78,14 @@ class Monkey:
             print(
                 f"\tMonkey {self.name} inspects an item with a worry level of {self._item}"
             )
+
         old = self._item
         new_worry_level = eval(self.strategy.operation)
-        reduced_worry_level = self.lmc + (new_worry_level % self.lmc)
+        reduced_worry_level = self.strategy.get_lmc() + (
+            new_worry_level % self.strategy.get_lmc()
+        )
         self._increment_business_score()
+
         if self.debug:
             print(
                 f"\tWorry level is raised to {new_worry_level}, then reduced to {reduced_worry_level}."
@@ -86,6 +99,7 @@ class Monkey:
     def _relief(self, item: int) -> int:
         """Relief after monkey gets bored."""
         new_worry_level = item // 3
+
         if self.debug:
             print(
                 f"\tMonkey {self.name} gets bored. New worry level {new_worry_level}."
@@ -106,6 +120,7 @@ class Monkey:
             print(
                 f"\tItem with worry level {item} is thrown to monkey {monkey.name}.\n"
             )
+
         monkey.add_item(item)
 
     def _empty_hands(self) -> None:
@@ -118,6 +133,7 @@ def load_monkeys(debug: bool = False) -> list[Monkey]:
     lines = load_input_data(DAY, debug)
     monkeys: list[Monkey] = list()
     monkey_lines: list[str] = list()
+
     for line in lines:
         if line.startswith("Monkey"):
             monkey_lines = list()
@@ -188,7 +204,6 @@ def get_friend(line: str) -> str:
 
 def find_monkey_friend(monkeys: list[Monkey], name: str) -> Monkey:
     """Gets a Monkey instance from a monkey name."""
-
     for monkey in monkeys:
         if name == monkey.name:
             return monkey
@@ -210,6 +225,7 @@ def first_question(debug: bool = False) -> None:
     for index in range(ROUNDS):
         if debug:
             print(f"Round {index}")
+
         for monkey in monkeys:
             monkey.play_round(True)
 
@@ -235,6 +251,7 @@ def second_question(debug: bool = False) -> None:
     for index in range(ROUNDS):
         if debug:
             print(f"Round {index}")
+
         for monkey in monkeys:
             monkey.play_round(False)
 
