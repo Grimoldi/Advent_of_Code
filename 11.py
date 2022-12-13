@@ -231,7 +231,6 @@ def second_question(debug: bool = False) -> None:
     monkeys = load_monkeys(debug)
     business_scores = list()
     ROUNDS = 10_000
-    # ROUNDS = 20
 
     for index in range(ROUNDS):
         if debug:
