@@ -41,7 +41,7 @@ class ElvesCPU:
         self._value = value
         self._busy = True
 
-    def make_moves(self, move: Move) -> None:
+    def make_move(self, move: Move) -> None:
         """Performs a move."""
         if move.operation == Operation.PASS:
             self._pass()
@@ -140,7 +140,7 @@ def first_question(debug: bool = False) -> None:
         if stop:
             break
 
-        cpu.make_moves(move)
+        cpu.make_move(move)
     print(
         f"First question answer. The sum of the interesting values is: {sum(intersting_values)}"
     )
@@ -172,7 +172,7 @@ def second_question(debug: bool = False) -> None:
         if stop:
             break
 
-        cpu.make_moves(move)
+        cpu.make_move(move)
 
 
 def main() -> None:
