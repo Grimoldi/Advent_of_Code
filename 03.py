@@ -86,7 +86,7 @@ def second_question(debug: bool = False) -> None:
 
 
 def main() -> None:
-    first_question()
+    first_question(True)
     second_question()
 
 

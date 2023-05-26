@@ -15,12 +15,13 @@ def setup_logger(level: LogLevel) -> logging.Logger:
     logger = logging.Logger(LOGGER_NAME)
     logger.setLevel(level.value)
     logger.addHandler(_logger_handler())
+    logging.basicConfig(level=level.value)
 
     return logger
 
 def _logger_handler() -> logging.StreamHandler:
     """Setup the default stream handler."""
-    log_format = 'VERBOSE:: %(message)s-%(funcName)s-%(name)s-%(lineno)d'
+    log_format = '%(levelname)s:: %(message)s-%(funcName)s-%(name)s-%(lineno)d'
     formatter = logging.Formatter(log_format)
 
     handler = logging.StreamHandler()
