@@ -1,7 +1,7 @@
 import os
 import string
 
-from utils import load_input_data
+import utils
 
 DAY = os.path.basename(__file__).split(".")[0]
 
@@ -27,7 +27,7 @@ def find_duplicate_item(first: str, second: str) -> str:
 
 def calculate_weigth(item: str) -> int:
     """Calculate the weigth for each item."""
-    mapping = dict(zip(string.ascii_lowercase, range(1, 26)))
+    mapping = dict(zip(string.ascii_lowercase, range(1, 27)))
     if item in mapping:
         return mapping[item]
     else:
@@ -46,7 +46,8 @@ def find_group_badge(rucksacks: list[str]) -> str:
 
 def first_question(debug: bool = False) -> None:
     """Function to solve the first question."""
-    rucksacks = load_input_data(DAY, debug)
+    rucksacks = utils.load_input_data(DAY, debug)
+    logger = utils.setup_logger(utils.create_log_level(debug))
 
     total_weigth = 0
     for rucksack_item in rucksacks:
@@ -56,15 +57,15 @@ def first_question(debug: bool = False) -> None:
 
         total_weigth += weigth
 
-        if debug:
-            print(f"{first=}, {second=}, {duplicate_item=}, {weigth=}")
+        logger.debug(f"{first=}, {second=}, {duplicate_item=}, {weigth=}")
 
-    print(f"Total priority for first question: {total_weigth}")
+    logger.info(f"Total priority for first question: {total_weigth}")
 
 
 def second_question(debug: bool = False) -> None:
     """Function to solve the second question."""
-    rucksacks = load_input_data(DAY, debug)
+    rucksacks = utils.load_input_data(DAY, debug)
+    logger = utils.setup_logger(utils.create_log_level(debug))
 
     total_weigth = 0
     groups = len(rucksacks) // 3
@@ -79,10 +80,9 @@ def second_question(debug: bool = False) -> None:
         total_weigth += weigth
         index += 1
 
-        if debug:
-            print(f"{group_rucksacks=}, {group_badge=}, {weigth=}")
+        logger.debug(f"{group_rucksacks=}, {group_badge=}, {weigth=}")
 
-    print(f"Total priority for second question: {total_weigth}")
+    logger.info(f"Total priority for second question: {total_weigth}")
 
 
 def main() -> None:

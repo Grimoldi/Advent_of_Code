@@ -1,8 +1,8 @@
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum, auto
 
-from utils import load_input_data
+import utils
 
 DAY = os.path.basename(__file__).split(".")[0]
 MAX_CLOCKS = 220
@@ -74,7 +74,7 @@ class ElvesCPU:
 def get_move(line: str) -> Move:
     """From the raw line gets a Move instance."""
     try:
-        operation, value = line.split(" ")
+        _, value = line.split(" ")
         return Move(Operation.ADD, int(value))
     except ValueError as e:
         return Move(Operation.PASS, 0)
@@ -82,7 +82,7 @@ def get_move(line: str) -> Move:
 
 def get_moves(debug: bool = False) -> list[Move]:
     """Gets the moves from the input file."""
-    data = load_input_data(DAY, debug)
+    data = utils.load_input_data(DAY, debug)
     moves = list()
     for line in data:
         moves.append(get_move(line))
@@ -111,6 +111,7 @@ def print_crt(cycle: int, register_value: int, debug: bool = False) -> None:
 def first_question(debug: bool = False) -> None:
     """Function to solve the first question."""
     moves = get_moves(debug)
+    logger = utils.setup_logger(utils.create_log_level(debug))
     cpu = ElvesCPU()
     intersting_values = list()
     stop = False
@@ -127,16 +128,14 @@ def first_question(debug: bool = False) -> None:
             # values operations
             cycle = cpu.get_cycle()
             register_value = cpu.get_register_value()
-            if debug:
-                print(f"{cycle=} {register_value=}")
+            logger.debug(f"{cycle=} {register_value=}")
 
             if cycle == MAX_CLOCKS + 1:
                 stop = True
                 break
             if cycle in INTERESTING_CLOCKS:
                 intersting_values.append(cycle * register_value)
-                if debug:
-                    print(f"{cycle}, {register_value} {intersting_values[-1]}")
+                logger.debug(f"{cycle}, {register_value} {intersting_values[-1]}")
         if stop:
             break
 

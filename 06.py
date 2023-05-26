@@ -1,6 +1,6 @@
 import os
 
-from utils import load_input_data
+import utils
 
 DAY = os.path.basename(__file__).split(".")[0]
 
@@ -25,13 +25,14 @@ def find_unique_values(signal_subset: str, size: int) -> bool:
         new_subset = signal_subset.replace(char, "")
         if len(new_subset) != (size - 1):
             unique = False
+            break
 
     return unique
 
 
 def first_question(debug: bool = False) -> None:
     """Function to solve the first question."""
-    data = load_input_data(DAY, debug)
+    data = utils.load_input_data(DAY, debug)
     SIZE = 4
     print(
         f"First question answer. The first non repeated index is: {find_nonrepeated_index(data[0], SIZE)}"
@@ -40,7 +41,7 @@ def first_question(debug: bool = False) -> None:
 
 def second_question(debug: bool = False) -> None:
     """Function to solve the second question."""
-    data = load_input_data(DAY, debug)
+    data = utils.load_input_data(DAY, debug)
     SIZE = 14
     print(
         f"Second question answer. The first non repeated index is: {find_nonrepeated_index(data[0], SIZE)}"

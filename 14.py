@@ -1,8 +1,9 @@
+import logging
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 
-from utils import load_input_data
+import utils
 
 DAY = os.path.basename(__file__).split(".")[0]
 
@@ -31,12 +32,12 @@ class Grid:
     height: int
     altitude: int
     debug: bool = False
+    logger: logging.Logger = field(init=False)
 
     def __post_init__(self) -> None:
         self.grid = [[Cell.AIR] * self.height for _ in range(self.width)]
         self._sand = Point(500, 0)
-        self._center_move = self._left_move = self._right_move = 0
-        self._repeat = 0
+        self.logger = logging.getLogger(utils.LOGGER_NAME)
 
     def set_altitude(self, altitude: int) -> None:
         """Setter method."""
@@ -44,24 +45,21 @@ class Grid:
 
     def draw_rock_segment(self, start: Point, end: Point) -> None:
         """Draws a rock segment on the grid."""
-        width = end.x - start.x
         height = end.y - start.y
 
         if height == 0:
-            starting_col, ending_col = self._get_entremity_coordinates(end.x, start.x)
+            starting_col, ending_col = self._get_extremity_coordinates(end.x, start.x)
             for col in range(starting_col, ending_col + 1):
-                if self.debug:
-                    print(f"\tFilling col ({col}, {start.y}) with rock.")
+                self.logger.debug(f"\tFilling col ({col}, {start.y}) with rock.")
                 self.grid[col][start.y] = Cell.ROCK
 
         else:
-            starting_row, ending_row = self._get_entremity_coordinates(end.y, start.y)
+            starting_row, ending_row = self._get_extremity_coordinates(end.y, start.y)
             for row in range(starting_row, ending_row + 1):
-                if self.debug:
-                    print(f"\tFilling row ({start.x}, {row}) with rock.")
+                self.logger.debug(f"\tFilling row ({start.x}, {row}) with rock.")
                 self.grid[start.x][row] = Cell.ROCK
 
-    def _get_entremity_coordinates(
+    def _get_extremity_coordinates(
         self, coordinate_1: int, coordinate_2: int
     ) -> tuple[int, int]:
         """Gets the starting and the ending point in order."""
@@ -96,8 +94,7 @@ class Grid:
         new_y = self._sand.y + 1
 
         if self.grid[new_x][new_y] != Cell.AIR:
-            if self.debug:
-                print(f"Unable to move sand to ({new_x}, {new_y}).")
+            self.logger.debug(f"Unable to move sand to ({new_x}, {new_y}).")
             return False
         return True
 
@@ -106,7 +103,6 @@ class Grid:
         new_x = self._sand.x
         new_y = self._sand.y + 1
         self._move_sand_sign(new_x, new_y)
-        self._center_move += 1
 
     def _check_below_left_cell(self) -> bool:
         """Checks one cell under and one cell left."""
@@ -114,8 +110,7 @@ class Grid:
         new_y = self._sand.y + 1
 
         if self.grid[new_x][new_y] != Cell.AIR:
-            if self.debug:
-                print(f"Unable to move sand to ({new_x}, {new_y}).")
+            self.logger.debug(f"Unable to move sand to ({new_x}, {new_y}).")
             return False
         return True
 
@@ -124,7 +119,6 @@ class Grid:
         new_x = self._sand.x - 1
         new_y = self._sand.y + 1
         self._move_sand_sign(new_x, new_y)
-        self._left_move += 1
 
     def _check_below_right_cell(self) -> bool:
         """Checks one cell under and one cell right."""
@@ -132,8 +126,7 @@ class Grid:
         new_y = self._sand.y + 1
 
         if self.grid[new_x][new_y] != Cell.AIR:
-            if self.debug:
-                print(f"Unable to move sand to ({new_x}, {new_y}).")
+            self.logger.debug(f"Unable to move sand to ({new_x}, {new_y}).")
             return False
         return True
 
@@ -142,19 +135,16 @@ class Grid:
         new_x = self._sand.x + 1
         new_y = self._sand.y + 1
         self._move_sand_sign(new_x, new_y)
-        self._right_move += 1
 
     def _reset_sand(self) -> None:
-        """Reset sand to it's starting point."""
+        """Reset sand to its starting point."""
         self._move_sand(500, 0)
-        self._right_move = self._center_move = self._left_move = 0
 
     def _move_sand_sign(self, x: int, y: int) -> None:
         """Moves the sand sign."""
-        if self.debug:
-            print(
-                f"Moving sand sign from ({self._sand.x}, {self._sand.y}) to ({x}, {y})."
-            )
+        self.logger.debug(
+            f"Moving sand sign from ({self._sand.x}, {self._sand.y}) to ({x}, {y})."
+        )
         self._draw_air(self._sand.x, self._sand.y)
         self._draw_sand(x, y)
         self._move_sand(x, y)
@@ -165,8 +155,7 @@ class Grid:
         center = self.grid[500][1]
         right = self.grid[501][1]
         is_blocked = left == Cell.SAND and center == Cell.SAND and right == Cell.SAND
-        if self.debug:
-            print(f"Is blocked? {is_blocked}. {left=} {center=} {right=}")
+        self.logger.debug(f"Is blocked? {is_blocked}. {left=} {center=} {right=}")
         return is_blocked
 
     def _draw_sand(self, x: int, y: int) -> None:
@@ -224,7 +213,7 @@ def setup_grid(debug: bool = False) -> Grid:
 
 def load_segments(debug: bool = False) -> list[list[Point]]:
     """Gets the segments from the input file."""
-    data = load_input_data(DAY, debug)
+    data = utils.load_input_data(DAY, debug)
     contiguos_segments = list()
     for line in data:
         segments = list()
@@ -271,6 +260,7 @@ def draw_floor(grid: Grid, altitude: int) -> None:
 def first_question(debug: bool = False) -> None:
     """Function to solve the first question."""
     grid = setup_grid(debug)
+    logger = utils.setup_logger(utils.create_log_level(debug))
     all_segments = load_segments(debug)
     write_rock_segments(grid, all_segments)
 
@@ -280,8 +270,7 @@ def first_question(debug: bool = False) -> None:
     unit_of_sand = 0
     while True:
         unit_of_sand += 1
-        if debug:
-            print(f"\n\nUnit of sand: {unit_of_sand}")
+        logger.debug(f"\n\nUnit of sand: {unit_of_sand}")
         try:
             grid.sand_turn()
             if debug:
@@ -297,6 +286,7 @@ def first_question(debug: bool = False) -> None:
 def second_question(debug: bool = False) -> None:
     """Function to solve the second question."""
     grid = setup_grid(debug)
+    logger = utils.setup_logger(utils.create_log_level(debug))
     all_segments = load_segments(debug)
     write_rock_segments(grid, all_segments)
     altitude = find_highest_point(all_segments)
@@ -309,14 +299,12 @@ def second_question(debug: bool = False) -> None:
     unit_of_sand = 0
     while True:
         unit_of_sand += 1
-        if debug:
-            print(f"\n\nUnit of sand: {unit_of_sand}")
+        logger.debug(f"\n\nUnit of sand: {unit_of_sand}")
         try:
             grid.sand_turn()
             if debug:
                 grid.print_example_q2()
         except IndexError as e:
-            print(e)
             unit_of_sand += 1
             break
         if debug and unit_of_sand == 100:
@@ -327,8 +315,8 @@ def second_question(debug: bool = False) -> None:
 
 
 def main() -> None:
-    first_question()
-    second_question()
+    first_question(True)
+    second_question(True)
 
 
 if __name__ == "__main__":

@@ -1,8 +1,9 @@
+import logging
 import os
 from dataclasses import dataclass, field
 from enum import Enum, auto
 
-from utils import load_input_data
+import utils
 
 DAY = os.path.basename(__file__).split(".")[0]
 
@@ -66,8 +67,8 @@ class Grid:
         """Add a position to the knot as visited."""
         pos = knot.get_position()
         knot.add_visited_point((pos.x, pos.y))
-        if debug:
-            print(f"{knot.name}: set {pos.x} {pos.y} cell to visited.")
+        logger = logging.getLogger(utils.LOGGER_NAME)
+        logger.debug(f"{knot.name}: set {pos.x} {pos.y} cell to visited.")
 
     def calculate_distance(self, head: Knot, tail: Knot) -> tuple[int, int]:
         """Calculate the distance between the knots."""
@@ -150,7 +151,7 @@ def get_move(line: str) -> Move:
 
 def get_moves(debug: bool = False) -> list[Move]:
     """Get the moves from the data file."""
-    data = load_input_data(DAY, debug)
+    data = utils.load_input_data(DAY, debug)
     moves = list()
     for line in data:
         moves.append(get_move(line))
@@ -170,6 +171,7 @@ def move_knots(head: Knot, tail: Knot, grid: Grid, debug: bool = False) -> None:
 def first_question(debug: bool = False) -> None:
     """Function to solve the first question."""
     moves = get_moves(debug)
+    logger = utils.setup_logger(utils.create_log_level(debug))
     starting_pos = {"x": 0, "y": 0}
 
     head = Knot("head", Position(**starting_pos))
@@ -178,16 +180,14 @@ def first_question(debug: bool = False) -> None:
     grid.set_cell_to_visited(tail, debug)
 
     for move in moves:
-        if debug:
-            print(f"{move=}")
+        logger.debug(f"{move=}")
         for _ in range(move.steps):
             grid.move_head(move.direction, head)
             grid.set_cell_to_visited(head, debug)
             move_knots(head, tail, grid, debug)
 
-    if debug:
-        print(head.visited)
-        print(tail.visited)
+    logger.debug(head.visited)
+    logger.debug(tail.visited)
     print(
         f"First question answer. "
         f"The total position visited by the tail knot are: {len(tail.visited)}"
@@ -197,6 +197,7 @@ def first_question(debug: bool = False) -> None:
 def second_question(debug: bool = False) -> None:
     """Function to solve the second question."""
     moves = get_moves(debug)
+    logger = utils.setup_logger(utils.create_log_level(debug))
     starting_pos = {"x": 0, "y": 0}
 
     head = Knot("head", Position(**starting_pos))
@@ -226,17 +227,15 @@ def second_question(debug: bool = False) -> None:
     ]
 
     for move in moves:
-        if debug:
-            print(f"{move=}")
+        logger.debug(f"{move=}")
         for _ in range(move.steps):
             grid.move_head(move.direction, head)
             grid.set_cell_to_visited(head, debug)
             for temp_head, temp_tail in couples:
                 move_knots(temp_head, temp_tail, grid, debug)
 
-    if debug:
-        print(head.visited)
-        print(tail.visited)
+    logger.debug(head.visited)
+    logger.debug(tail.visited)
     print(
         f"Second question answer. "
         f"The total position visited by the tail knot are: {len(tail.visited)}"

@@ -1,8 +1,38 @@
+import logging
 import os
+from enum import Enum
 from pathlib import Path
 
 BASE_PATH = Path(__file__).parent
+LOGGER_NAME = "AOC"
 
+class LogLevel(Enum):
+    DEBUG = 0
+    INFO = 1
+
+def setup_logger(level: LogLevel) -> logging.Logger:
+    """Creates a logger instance."""
+    logger = logging.Logger(LOGGER_NAME)
+    logger.setLevel(level.value)
+    logger.addHandler(_logger_handler())
+
+    return logger
+
+def _logger_handler() -> logging.StreamHandler:
+    """Setup the default stream handler."""
+    log_format = 'VERBOSE:: %(message)s-%(funcName)s-%(name)s-%(lineno)d'
+    formatter = logging.Formatter(log_format)
+
+    handler = logging.StreamHandler()
+    handler.setFormatter(formatter)
+
+    return handler
+
+def create_log_level(debug: bool) -> LogLevel:
+    """Factory for logging level."""
+    if debug:
+        return LogLevel.DEBUG
+    return LogLevel.INFO
 
 def load_input_data(day: str, debug: bool = False) -> list[str]:
     """Load all data from a file."""

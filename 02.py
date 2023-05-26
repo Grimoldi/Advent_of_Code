@@ -1,7 +1,7 @@
 import os
 from enum import Enum, auto
 
-from utils import load_input_data
+import utils
 
 DAY = os.path.basename(__file__).split(".")[0]
 
@@ -104,7 +104,8 @@ def convert_result(raw: str) -> Output:
 
 def first_question(debug: bool = False) -> None:
     """Function to solve the first question."""
-    matches = load_input_data(DAY, debug)
+    matches = utils.load_input_data(DAY, debug)
+    logger = utils.setup_logger(utils.create_log_level(debug))
 
     total_score = 0
     for match in matches:
@@ -120,16 +121,16 @@ def first_question(debug: bool = False) -> None:
         final_score = match_score + sign_score
         total_score += final_score
 
-        if debug:
-            print(f"{bets=}, {result=}, {opponent=}, {own=}")
-            print(f"{match_score=}, {sign_score=}")
+        logger.debug(f"{bets=}, {result=}, {opponent=}, {own=}")
+        logger.debug(f"{match_score=}, {sign_score=}")
 
-    print(f"Total score for first strategy: {total_score}")
+    logger.info(f"Total score for first strategy: {total_score}")
 
 
 def second_question(debug: bool = False) -> None:
     """Function to solve the second question."""
-    matches = load_input_data(DAY, debug)
+    matches = utils.load_input_data(DAY, debug)
+    logger = utils.setup_logger(utils.create_log_level(debug))
 
     total_score = 0
     for match in matches:
@@ -145,11 +146,10 @@ def second_question(debug: bool = False) -> None:
         final_score = match_score + sign_score
         total_score += final_score
 
-        if debug:
-            print(f"{bets=}, {result=}, {opponent=}, {own=}")
-            print(f"{match_score=}, {sign_score=}")
+        logger.debug(f"{bets=}, {result=}, {opponent=}, {own=}")
+        logger.debug(f"{match_score=}, {sign_score=}")
 
-    print(f"Total score for second strategy: {total_score}")
+    logger.info(f"Total score for second strategy: {total_score}")
 
 
 def main() -> None:

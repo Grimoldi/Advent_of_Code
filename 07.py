@@ -4,7 +4,7 @@ import os
 import re
 from dataclasses import dataclass, field
 
-from utils import load_input_data
+import utils
 
 DAY = os.path.basename(__file__).split(".")[0]
 
@@ -192,7 +192,7 @@ def print_tree(tree: DirectoryTree, indent: int = 0) -> None:
 def first_question(debug: bool = False) -> None:
     """Function to solve the first question."""
     FILTER_SIZE = 100_000
-    data = load_input_data(DAY, debug)
+    data = utils.load_input_data(DAY, debug)
     tree = create_folder_tree(data, debug)
 
     folders = list_folders(tree)
@@ -210,7 +210,7 @@ def second_question(debug: bool = False) -> None:
     """Function to solve the second question."""
     TOTAL_DISK_SIZE = 70_000_000
     UPDATE_SIZE = 30_000_000
-    data = load_input_data(DAY, debug)
+    data = utils.load_input_data(DAY, debug)
     tree = create_folder_tree(data, debug)
     used_space = tree.size
     space_to_freed = (used_space + UPDATE_SIZE) - TOTAL_DISK_SIZE

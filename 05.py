@@ -1,10 +1,11 @@
+import logging
 import os
 import re
 import sys
 from collections import deque
 from dataclasses import dataclass
 
-from utils import load_input_data
+import utils
 
 DAY = os.path.basename(__file__).split(".")[0]
 
@@ -20,7 +21,7 @@ def setup_queues(debug: bool = False) -> list[deque]:
         new_queue = deque()
         queues.append(new_queue)
 
-    lines = load_input_data(DAY, debug)
+    lines = utils.load_input_data(DAY, debug)
     for line in lines:
         if line[0:3] == " 1 ":
             break
@@ -67,11 +68,13 @@ class Move:
 
 def find_moves(debug: bool = False) -> list[Move]:
     """Find the moves from the input file."""
-    lines = load_input_data(DAY, debug)
+    lines = utils.load_input_data(DAY, debug)
     moves = list()
     data_compiler = re.compile(
         r"move (?P<how_many>\d+) from (?P<from_queue>\d) to (?P<to_queue>\d)$"
     )
+    logger = logging.getLogger(utils.LOGGER_NAME)
+
     for line in lines:
         if not line.startswith("move"):
             continue
@@ -83,7 +86,7 @@ def find_moves(debug: bool = False) -> list[Move]:
             to_queue = int(regex_groups.group("to_queue"))  # type: ignore
             moves.append(Move(how_many, from_queue, to_queue))  # type: ignore
         except AttributeError as e:
-            print(f"{e=}, {line=}")
+            logger.error(f"{e=}, {line=}")
             sys.exit(119)
 
     return moves
@@ -125,24 +128,27 @@ def print_stacks_top(queues: list[deque]) -> None:
         print(queue[0], end="")
 
 
-def first_question() -> None:
+def first_question(debug: bool = False) -> None:
     """Function to solve the first question."""
+    logger = utils.setup_logger(utils.create_log_level(debug))
+    
     queues = setup_queues()
     moves = find_moves()
     for move in moves:
         queues = make_move_cratemover_9000(move, queues)
     print_stacks_top(queues)
-    print(f"\nFirst question answer. The top of each stack is: {queues}")
+    logger.info(f"\nFirst question answer. The top of each stack is: {queues}")
 
 
-def second_question() -> None:
+def second_question(debug:bool = False) -> None:
     """Function to solve the second question."""
+    logger = utils.setup_logger(utils.create_log_level(debug))
     queues = setup_queues()
     moves = find_moves()
     for move in moves:
         queues = make_move_cratemover_9001(move, queues)
     print_stacks_top(queues)
-    print(f"\nSecond question answer. The top of each stack is: {queues}")
+    logger.info(f"\nSecond question answer. The top of each stack is: {queues}")
 
 
 def main() -> None:

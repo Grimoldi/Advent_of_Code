@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import logging
 import math
 import os
 from dataclasses import dataclass, field
 
-from utils import load_input_data
+import utils
 
 DAY = os.path.basename(__file__).split(".")[0]
 
@@ -34,7 +35,10 @@ class Monkey:
     strategy: Strategy
     business_score: int
     items: list[int] = field(default_factory=list)
-    debug: bool = False
+    logger: logging.Logger = field(init=False)
+
+    def __post_init__(self) -> None:
+        self.logger = logging.getLogger(utils.LOGGER_NAME)
 
     def add_true_friend(self, monkey: Monkey) -> None:
         """Setter method."""
@@ -58,8 +62,7 @@ class Monkey:
 
     def play_round(self, should_i_worry: bool = False) -> None:
         """Monkey plays a round."""
-        if self.debug:
-            print(f"\tMonkey {self.name} has items {[x for x in self.items]}.\n")
+        self.logger.debug(f"\tMonkey {self.name} has items {[x for x in self.items]}.\n")
 
         for self._item in self.items:
             new_worry_level = self._inspect_item()
@@ -74,8 +77,7 @@ class Monkey:
 
     def _inspect_item(self) -> int:
         """Inspect an item."""
-        if self.debug:
-            print(
+        self.logger.debug(
                 f"\tMonkey {self.name} inspects an item with a worry level of {self._item}"
             )
 
@@ -86,8 +88,7 @@ class Monkey:
         )
         self._increment_business_score()
 
-        if self.debug:
-            print(
+        self.logger.debug(
                 f"\tWorry level is raised to {new_worry_level}, then reduced to {reduced_worry_level}."
             )
         return reduced_worry_level
@@ -100,24 +101,21 @@ class Monkey:
         """Relief after monkey gets bored."""
         new_worry_level = item // 3
 
-        if self.debug:
-            print(
+        self.logger.debug(
                 f"\tMonkey {self.name} gets bored. New worry level {new_worry_level}."
             )
         return new_worry_level
 
     def _test_item(self, item: int) -> bool:
         """Monkey test the item against the strategy."""
-        if self.debug:
-            print(
+        self.logger.debug(
                 f"\t{item} divisible by {self.strategy.divisible_test}: {self._item % self.strategy.divisible_test == 0}"
             )
         return item % self.strategy.divisible_test == 0
 
     def _thrown_item(self, item: int, monkey: Monkey) -> None:
         """Monkey throws the item."""
-        if self.debug:
-            print(
+        self.logger.debug(
                 f"\tItem with worry level {item} is thrown to monkey {monkey.name}.\n"
             )
 
@@ -130,7 +128,7 @@ class Monkey:
 
 def load_monkeys(debug: bool = False) -> list[Monkey]:
     """Loads the monkeys from the input file."""
-    lines = load_input_data(DAY, debug)
+    lines = utils.load_input_data(DAY, debug)
     monkeys: list[Monkey] = list()
     monkey_lines: list[str] = list()
 
@@ -171,7 +169,7 @@ def create_monkey(lines: list[str], debug: bool = False) -> Monkey:
 
     strategy = Strategy(test, operation)  # type: ignore
     business_score = 0
-    return Monkey(name, true_friend, false_friend, strategy, business_score, items, debug)  # type: ignore
+    return Monkey(name, true_friend, false_friend, strategy, business_score, items)  # type: ignore
 
 
 def get_name(line: str) -> str:
@@ -219,19 +217,19 @@ def get_lmc(monkeys_strategy: list[Strategy]) -> int:
 def first_question(debug: bool = False) -> None:
     """Function to solve the first question."""
     monkeys = load_monkeys(debug)
+    logger = utils.setup_logger(utils.create_log_level(debug))
     business_scores = list()
     ROUNDS = 20
 
     for index in range(ROUNDS):
-        if debug:
-            print(f"Round {index}")
+        logger.debug(f"Round {index}")
 
         for monkey in monkeys:
             monkey.play_round(True)
 
             if index == ROUNDS - 1:
                 business_scores.append(monkey.get_business_score())
-                print(
+                logger.info(
                     f"Monkey {monkey.name} has a business score of {monkey.get_business_score()}"
                 )
 
@@ -245,32 +243,32 @@ def first_question(debug: bool = False) -> None:
 def second_question(debug: bool = False) -> None:
     """Function to solve the second question."""
     monkeys = load_monkeys(debug)
+    logger = utils.setup_logger(utils.create_log_level(debug))
     business_scores = list()
     ROUNDS = 10_000
 
     for index in range(ROUNDS):
-        if debug:
-            print(f"Round {index}")
+        logger.debug(f"Round {index}")
 
         for monkey in monkeys:
             monkey.play_round(False)
 
             if index == ROUNDS - 1:
                 business_scores.append(monkey.get_business_score())
-                print(
+                logger.info(
                     f"Monkey {monkey.name} has a business score of {monkey.get_business_score()}"
                 )
 
     business_scores.sort(reverse=True)
-    print(f"{business_scores}")
+    logger.info(f"{business_scores}")
     print(
         f"Second question answer. The business score of the top two monkeys is {business_scores[0] * business_scores[1]}."
     )
 
 
 def main() -> None:
-    first_question()
-    second_question()
+    first_question(True)
+    second_question(True)
 
 
 if __name__ == "__main__":

@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import logging
 import os
 import pprint
 from dataclasses import dataclass
 
-from utils import load_input_data
+import utils
 
 DAY = os.path.basename(__file__).split(".")[0]
 
@@ -83,8 +84,9 @@ class TreeGrid:
                 return True
         return False
 
-    def get_scenic_score(self, row: int, col: int, debug: bool = False) -> int:
+    def get_scenic_score(self, row: int, col: int) -> int:
         """Get the scenic score from a given position."""
+        logger = logging.getLogger(utils.LOGGER_NAME)
         tree = self.grid[row][col]
 
         scenic_score = 1
@@ -94,16 +96,14 @@ class TreeGrid:
                 continue
             for index, other_tree in enumerate(dir, start=1):
                 if other_tree >= tree:  # type: ignore
-                    if debug:
-                        print(
+                    logger.debug(
                             f"Found bigger tree {other_tree} {tree}. {index} {scenic_score}"
                         )
                     scenic_score = scenic_score * index
                     break
 
                 if index == len(dir):
-                    if debug:
-                        print(f"End of the list. {index} {scenic_score}")
+                    logger.debug(f"End of the list. {index} {scenic_score}")
                     scenic_score = scenic_score * index
 
         return scenic_score
@@ -130,7 +130,8 @@ def find_visible_trees(grid: TreeGrid, width: int, height: int) -> int:
 
 def first_question(debug: bool = False) -> None:
     """Function to solve the first question."""
-    data = load_input_data(DAY, debug)
+    data = utils.load_input_data(DAY, debug)
+    logger = utils.setup_logger(utils.create_log_level(debug))
     if debug:
         width, height = (5, 5)
     else:
@@ -149,7 +150,8 @@ def first_question(debug: bool = False) -> None:
 
 def second_question(debug: bool = False) -> None:
     """Function to solve the second question."""
-    data = load_input_data(DAY, debug)
+    data = utils.load_input_data(DAY, debug)
+    logger = utils.setup_logger(utils.create_log_level(debug))
     if debug:
         width, height = (5, 5)
     else:
@@ -158,12 +160,12 @@ def second_question(debug: bool = False) -> None:
     fill_grid(data, grid)  # type: ignore
     if debug:
         grid.print_grid()
-        print(grid.get_scenic_score(3, 2, True))
+        print(grid.get_scenic_score(3, 2))
     scores = list()
     for x in range(width):
         for y in range(height):
             if x * y != 0 or x != width or y != width:
-                scores.append(grid.get_scenic_score(x, y, debug))
+                scores.append(grid.get_scenic_score(x, y))
     print(f"Second question answer. The most scenic tree has a score of: {max(scores)}")
 
 

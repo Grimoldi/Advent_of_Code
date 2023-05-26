@@ -1,7 +1,7 @@
 import os
 from dataclasses import dataclass
 
-from utils import load_input_data
+import utils
 
 DAY = os.path.basename(__file__).split(".")[0]
 
@@ -47,34 +47,36 @@ def find_partial_overlapping(
 
 def first_question(debug: bool = False) -> None:
     """Function to solve the first question."""
-    data = load_input_data(DAY, debug)
+    data = utils.load_input_data(DAY, debug)
+    logger = utils.setup_logger(utils.create_log_level(debug))
+
     overlapped_couples = 0
     for elf_couple in data:
         s1, s2 = find_sections_ranges(elf_couple)
         is_overlapped = find_complete_overlapping(s1, s2)
         if is_overlapped:
             overlapped_couples += 1
-            if debug:
-                print(f"{s1=}, {s2=}")
+            logger.debug(f"{s1=}, {s2=}")
 
-    print(
+    logger.info(
         f"First question answer. Complete overlapped sections are: {overlapped_couples}"
     )
 
 
 def second_question(debug: bool = False) -> None:
     """Function to solve the second question."""
-    data = load_input_data(DAY, debug)
+    data = utils.load_input_data(DAY, debug)
+    logger = utils.setup_logger(utils.create_log_level(debug))
+
     overlapped_couples = 0
     for elf_couple in data:
         s1, s2 = find_sections_ranges(elf_couple)
         is_overlapped = find_partial_overlapping(s1, s2)
         if is_overlapped:
             overlapped_couples += 1
-            if debug:
-                print(f"{s1=}, {s2=}")
+            logger.debug(f"{s1=}, {s2=}")
 
-    print(
+    logger.info(
         f"Second question answer. Partially overlapped sections are: {overlapped_couples}"
     )
 
