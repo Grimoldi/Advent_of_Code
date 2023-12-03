@@ -2,24 +2,22 @@ import os
 
 from utils import load_input_data
 
-DAY = os.path.basename(__file__).split(".")[0]
-
 
 def main():
-    # first_question(False)
-    second_question(False)
+    first_question()
+    second_question()
 
 
-def first_question(test: bool = False) -> None:
+def first_question() -> None:
     """Answers to the first question."""
-    data = load_input_data(DAY, test)
+    data = load_input_data("01_f_input")
     digits = find_double_digit_coordinate(data)
     print(f"{[x for x in digits]}\n{sum(digits)}")
 
 
-def second_question(test: bool = False) -> None:
+def second_question() -> None:
     """Answers to the second question."""
-    data = load_input_data(DAY, test)
+    data = load_input_data("01_s_input")
     digits = find_double_digit_coordinate_even_from_string(data)
     print(f"{[x for x in digits]}\n{sum(digits)}")
 

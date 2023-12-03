@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "advent of code - 2023"
+version = "0.1.0"
+description = "Advent of Code for 2023"
+authors = ["Eugenio Grimoldi"]
+readme = "README.md"
+packages = [{include = "advent of code _ 2023"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.group.test]
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.3"
+
+[tool.pytest.ini_options]
+pythonpath = "./src"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

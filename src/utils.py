@@ -40,11 +40,9 @@ def create_log_level(debug: bool) -> LogLevel:
     return LogLevel.INFO
 
 
-def load_input_data(day: str, test: bool = False) -> list[str]:
+def load_input_data(file_name: str) -> list[str]:
     """Load all data from a file."""
-    data_file = f"{day}_input.txt"
-    if test:
-        data_file = f"{day}_test.txt"
+    data_file = f"{file_name}.txt"
     data_path = BASE_PATH / "input_data" / data_file
 
     if not os.path.exists(data_path):
