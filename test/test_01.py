@@ -1,5 +1,3 @@
-import pytest
-
 import day_01
 from utils import load_input_data
 
@@ -9,6 +7,13 @@ def test_double_digit_number_calculation() -> None:
     numbers = [1, 2, 3, 4, 5, 6, 7]
     double_digits = day_01.get_digits_from_list(numbers)
     assert double_digits == 17
+
+
+def test_double_digit_number_from_single_number() -> None:
+    """Test a list of a single element."""
+    numbers = [2]
+    double_digits = day_01.get_digits_from_list(numbers)
+    assert double_digits == 22
 
 
 def test_first_question() -> None:

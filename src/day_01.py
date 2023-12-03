@@ -1,5 +1,3 @@
-import os
-
 from utils import load_input_data
 
 
@@ -12,14 +10,14 @@ def first_question() -> None:
     """Answers to the first question."""
     data = load_input_data("01_f_input")
     digits = find_double_digit_coordinate(data)
-    print(f"{[x for x in digits]}\n{sum(digits)}")
+    print(f"The sum of all numbers is: {sum(digits)}")
 
 
 def second_question() -> None:
     """Answers to the second question."""
     data = load_input_data("01_s_input")
     digits = find_double_digit_coordinate_even_from_string(data)
-    print(f"{[x for x in digits]}\n{sum(digits)}")
+    print(f"The sum of all numbers is: {sum(digits)}")
 
 
 def find_double_digit_coordinate(data: list[str]) -> list[int]:
