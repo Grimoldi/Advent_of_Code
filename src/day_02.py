@@ -91,19 +91,34 @@ def get_game_id(line: str) -> int:
 
 def get_dices_from_single_round(game_round: str) -> SingleRound:
     """From a string round get the SingleRound object."""
-    blues_compiler = re.compile(r"(.*\, )?(?P<blues>\d+ blue).*$")
+    blues_compiler = get_blue_dice_compiler()
     blues_group = blues_compiler.search(game_round)
     blues = get_dice_from_regex(blues_group, Dice.BLUE)
 
-    greens_compiler = re.compile(r"(.*\, )?(?P<greens>\d+ green).*$")
+    greens_compiler = get_green_dice_compiler()
     greens_group = greens_compiler.search(game_round)
     greens = get_dice_from_regex(greens_group, Dice.GREEN)
 
-    reds_compiler = re.compile(r"(.*\, )?(?P<reds>\d+ red).*$")
+    reds_compiler = get_red_dice_compiler()
     reds_group = reds_compiler.search(game_round)
     reds = get_dice_from_regex(reds_group, Dice.RED)
 
     return SingleRound(greens=greens, reds=reds, blues=blues)
+
+
+def get_blue_dice_compiler() -> re.Pattern[str]:
+    """Gets the pattern for the blue dices."""
+    return re.compile(r"(.*\, )?(?P<blues>\d+ blue).*$")
+
+
+def get_red_dice_compiler() -> re.Pattern[str]:
+    """Gets the pattern for the red dices."""
+    return re.compile(r"(.*\, )?(?P<reds>\d+ red).*$")
+
+
+def get_green_dice_compiler() -> re.Pattern[str]:
+    """Gets the pattern for the green dices."""
+    return re.compile(r"(.*\, )?(?P<greens>\d+ green).*$")
 
 
 def get_dice_from_regex(matched: re.Match | None, color: Dice) -> int:

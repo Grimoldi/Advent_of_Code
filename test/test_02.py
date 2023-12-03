@@ -15,17 +15,17 @@ def test_regex_for_round() -> None:
     """Test that the group regex is working as expected."""
     test_round = "3 green, 4 red"
 
-    blues_compiler = re.compile(r".*(?P<blues>\d+ blue).*$")
+    blues_compiler = day_02.get_blue_dice_compiler()
     blues_group = blues_compiler.search(test_round)
     blues = day_02.get_dice_from_regex(blues_group, day_02.Dice.BLUE)
     assert blues == 0
 
-    greens_compiler = re.compile(r".*(?P<greens>\d+ green).*$")
+    greens_compiler = day_02.get_green_dice_compiler()
     greens_group = greens_compiler.search(test_round)
     greens = day_02.get_dice_from_regex(greens_group, day_02.Dice.GREEN)
     assert greens == 3
 
-    reds_compiler = re.compile(r".*(?P<reds>\d+ red).*$")
+    reds_compiler = day_02.get_red_dice_compiler()
     reds_group = reds_compiler.search(test_round)
     reds = day_02.get_dice_from_regex(reds_group, day_02.Dice.RED)
     assert reds == 4
