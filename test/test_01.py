@@ -1,7 +1,5 @@
 from typing import TYPE_CHECKING
 
-import pytest
-
 import day_01  # type: ignore
 
 if TYPE_CHECKING:
@@ -22,15 +20,7 @@ def test_first_question() -> None:
     assert total_distance == 11
 
 
-@pytest.mark.skip()
 def test_second_question() -> None:
     """Test the second question."""
-    data = load_input_data("01_first_example")
-    numbers = day_01.find_double_digit_coordinate_even_from_string(data)
-    expected_result = [29, 83, 13, 24, 42, 14, 76]
-    assert numbers == expected_result
-    assert sum(numbers) == 281
-    assert numbers == expected_result
-    assert sum(numbers) == 281
-    assert numbers == expected_result
-    assert sum(numbers) == 281
+    total_similarity = day_01._find_total_similarity_score(FIRST_EXAMPLE)
+    assert total_similarity == 31
