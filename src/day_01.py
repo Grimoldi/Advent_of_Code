@@ -1,91 +1,51 @@
-from utils import load_input_data
+import os
 
+import utils
 
-def main():
-    first_question()
-    second_question()
+DAY = os.path.basename(__file__).split(".")[0]
+FILENAME = "01_first"
+logger = utils.setup_logger(utils.create_log_level(False))
 
 
 def first_question() -> None:
-    """Answers to the first question."""
-    data = load_input_data("01_f_input")
-    digits = find_double_digit_coordinate(data)
-    print(f"The sum of all numbers is: {sum(digits)}")
+    """Function to solve the first question."""
+    print(
+        "First question answer. "
+        f"The total distance is: {_find_total_distance(FILENAME)}"
+    )
 
 
-def second_question() -> None:
-    """Answers to the second question."""
-    data = load_input_data("01_s_input")
-    digits = find_double_digit_coordinate_even_from_string(data)
-    print(f"The sum of all numbers is: {sum(digits)}")
+def second_question(debug: bool = False) -> None:
+    """Function to solve the second question."""
+    print(f"Second question answer: {DAY}")
 
 
-def find_double_digit_coordinate(data: list[str]) -> list[int]:
-    """From the raw data extract the double digits coordinates."""
-    digits: list[int] = list()
-    for line in data:
-        numbers = list()
-        for char in line:
-            try:
-                digit = int(char)
-                numbers.append(digit)
-            except ValueError as _:
-                continue
+def _build_data(filename: str) -> tuple[list[int], list[int]]:
+    """From the input file, build the data to work with."""
+    raw_data = utils.load_input_data(filename)
+    first_half: list[int] = list()
+    second_half: list[int] = list()
+    for line in raw_data:
+        first_col, second_col = line.split()
+        first_half.append(int(first_col))
+        second_half.append(int(second_col))
 
-        digits.append(get_digits_from_list(numbers))
-
-    return digits
+    return (sorted(first_half), sorted(second_half))
 
 
-def find_double_digit_coordinate_even_from_string(data: list[str]) -> list[int]:
-    """From the raw data extract the double digits coordinates. First ten numbers are also valid as strings."""
+def _find_total_distance(filename: str) -> int:
+    """Given the raw data file, find the total distance."""
+    left_col, right_col = _build_data(filename)
+    distance_sum = 0
+    for left_digit, right_digit in zip(left_col, right_col):
+        distance_sum += abs(left_digit - right_digit)
 
-    def convert_name_to_number(name: str) -> int:
-        """Convert the name to the number."""
-        return MAPPING[name]
-
-    def match_key_name(substring: str) -> bool:
-        """Checks if a substring matches a key name."""
-        matched = [x for x in MAPPING.keys() if x.startswith(substring)]
-        return len(matched) > 0
-
-    MAPPING = {
-        "one": 1,
-        "two": 2,
-        "three": 3,
-        "four": 4,
-        "five": 5,
-        "six": 6,
-        "seven": 7,
-        "eight": 8,
-        "nine": 9,
-    }
-    digits: list[int] = list()
-
-    for line in data:
-        numbers = list()
-        for index, char in enumerate(line):
-            try:
-                digit = int(char)
-                numbers.append(digit)
-            except ValueError as _:
-                i = 1
-                substring = line[index : index + i]
-                while match_key_name(substring) and i <= len(line):
-                    i += 1
-                    substring = line[index : index + i]
-                word_number = line[index : index + i - 1]
-                if word_number in MAPPING:
-                    numbers.append(convert_name_to_number(word_number))
-
-        digits.append(get_digits_from_list(numbers))
-
-    return digits
+    return distance_sum
 
 
-def get_digits_from_list(numbers: list[int]) -> int:
-    """Gets a double digits number from a list of int."""
-    return 10 * numbers[0] + numbers[-1]
+def main() -> None:
+    first_question()
+    second_question()
 
 
 if __name__ == "__main__":
