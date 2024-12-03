@@ -15,11 +15,11 @@ def first_question() -> None:
     )
 
 
-def second_question(debug: bool = False) -> None:
+def second_question() -> None:
     """Function to solve the second question."""
     print(
-        "First question answer. "
-        f"The total distance is: {_find_total_similarity_score(FILENAME)}"
+        "Second question answer. "
+        f"The total similarity score is: {_find_total_similarity_score(FILENAME)}"
     )
 
 
