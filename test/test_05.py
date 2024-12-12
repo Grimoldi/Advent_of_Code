@@ -60,3 +60,52 @@ def test_sum_of_correct_pages() -> None:
     expected = 143
 
     assert actual == expected
+
+
+def test_rules_sorting() -> None:
+    rules, _ = day_05._build_data_from(FIRST_EXAMPLE)
+    sorted_rules = day_05._sort_rules(rules)
+
+    actual = sorted_rules[0]
+    expected = (29, 13)
+    assert actual == expected
+
+    actual = sorted_rules[-1]
+    expected = (97, 75)
+    assert actual == expected
+
+
+def test_resort_of_pages_for_single_rule() -> None:
+    actual = [75, 97, 47, 61, 53]
+    rule = (97, 75)
+    day_05._resort_by_single(actual, rule)
+    expected = [97, 75, 47, 61, 53]
+
+    assert actual == expected
+
+
+def test_sum_of_reordered_pages() -> None:
+    rules, pages = day_05._build_data_from(FIRST_EXAMPLE)
+    rules = day_05._sort_rules(rules)
+    actual = day_05._calculate_sum_of_incorrect_middlepages(pages, rules)
+    expected = 123
+
+    assert actual == expected
+
+
+def test_several_reorder_of_incorrect_list() -> None:
+    rules, batches = day_05._build_data_from(FIRST_EXAMPLE)
+    rules = day_05._sort_rules(rules)
+    # [97, 13, 75, 29, 47]
+    pages = batches[-1]
+
+    for rule in rules:
+        is_correct_order = day_05._check_order_of_by_single(pages, rule)
+        if is_correct_order:
+            continue
+
+        day_05._resort_by_single(pages, rule)
+
+    actual = pages
+    expected = [97, 75, 47, 29, 13]
+    assert actual == expected
