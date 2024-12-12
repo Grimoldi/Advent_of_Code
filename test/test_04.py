@@ -103,6 +103,19 @@ def test_mirror_report() -> None:
     assert actual == expected
 
 
+def test_extract_right_to_left() -> None:
+    partial_data = [
+        ["1", "2", "3", "4"],
+        ["5", "6", "7", "8"],
+        ["9", "10", "11", "12"],
+        ["13", "14", "15", "16"],
+    ]
+    expected = [["4", "7", "10", "13"]]
+    actual = day_04._extract_diagonally_from_right_to_left_from(partial_data, 4)
+
+    assert expected == actual
+
+
 def test_first_question() -> None:
     actual = day_04._count_xmas_from(FIRST_EXAMPLE)
     expected = 18

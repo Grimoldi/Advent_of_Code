@@ -3,7 +3,7 @@ import os
 import utils
 
 DAY = os.path.basename(__file__).split(".")[0]
-FILENAME = "03_first"
+FILENAME = "04_first"
 logger = utils.setup_logger(utils.create_log_level(False))
 
 # an Input is equiavlent to the input file, read as a Matrix NxM
@@ -14,7 +14,7 @@ Batch = list[str]
 
 def first_question() -> None:
     """Function to solve the first question."""
-    print("First question answer. ")
+    print("First question answer. " f"{_count_xmas_from(FILENAME)}")
 
 
 def second_question() -> None:
@@ -137,7 +137,7 @@ def _extract_diagonally_from_right_to_left_from(
 ) -> list[Batch]:
     """From the input extract diagonnaly right->left every batch."""
     new_report = _revert(report)
-    return _extract_diagonally_from_left_to_right_from(new_report)
+    return _extract_diagonally_from_left_to_right_from(new_report, width)
 
 
 def _count_xmas_from(filename: str) -> int:
@@ -165,3 +165,5 @@ def _count_xmas_from(filename: str) -> int:
 
 if __name__ == "__main__":
     main()
+
+# < 2615
