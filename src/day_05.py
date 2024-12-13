@@ -147,5 +147,3 @@ def _calculate_sum_of_incorrect_middlepages(
 
 if __name__ == "__main__":
     main()
-
-# < 4581
