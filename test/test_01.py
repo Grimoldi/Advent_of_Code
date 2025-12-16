@@ -1,9 +1,4 @@
-from typing import TYPE_CHECKING
-
-import day_01  # type: ignore
-
-if TYPE_CHECKING:
-    from src import day_01
+import day_01
 
 FIRST_EXAMPLE = "01_first_example"
 

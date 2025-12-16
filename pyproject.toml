@@ -9,6 +9,7 @@ packages = [{include = "advent of code _ 2023"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 ordered-set = "^4.1.0"
+loguru = "^0.7.3"
 
 [tool.poetry.group.test]
 

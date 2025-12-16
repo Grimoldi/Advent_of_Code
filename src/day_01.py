@@ -1,10 +1,9 @@
 import os
 
-import utils
+import data_loader
 
 DAY = os.path.basename(__file__).split(".")[0]
 FILENAME = "01_first"
-logger = utils.setup_logger(utils.create_log_level(False))
 
 
 def first_question() -> None:
@@ -25,7 +24,7 @@ def second_question() -> None:
 
 def _build_data(filename: str) -> tuple[list[int], list[int]]:
     """From the input file, build the data to work with."""
-    raw_data = utils.load_input_data(filename)
+    raw_data = data_loader.load_input_data(filename)
     first_half: list[int] = list()
     second_half: list[int] = list()
     for line in raw_data:
