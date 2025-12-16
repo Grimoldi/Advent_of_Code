@@ -40,16 +40,17 @@ class Guard:
         Store the step made.
         """
         logger.info(
-            f"Currently in ({self.x},{self.y}), moving forward with direction {self.direction}."
+            f"Currently in ({self.x},{self.y}), "
+            f"moving forward with direction {self.direction}."
         )
         if self.direction == Direction.UP:
             self.y -= 1
-        elif self.direction == Direction.LEFT:
-            self.x -= 1
+        elif self.direction == Direction.RIGHT:
+            self.x += 1
         elif self.direction == Direction.DOWN:
             self.y += 1
         else:
-            self.x += 1
+            self.x -= 1
         logger.info(f"Now in ({self.x}, {self.y}).")
 
         self.steps += 1
@@ -59,46 +60,43 @@ class Guard:
         """Add to the visited cell the current cell."""
         self.visited_cell.add((self.x, self.y))
 
+    def turn_right(self) -> None:
+        """Turn the guard right 90 degree."""
+        logger.info(f"Turning right from {self.direction}")
+        next_direction = {
+            Direction.UP: Direction.RIGHT,
+            Direction.RIGHT: Direction.DOWN,
+            Direction.DOWN: Direction.LEFT,
+            Direction.LEFT: Direction.UP,
+        }
+        self.direction = next_direction[self.direction]
+        logger.info(f"Now pointed to {self.direction}")
+
+    def cell_ahead(self) -> tuple[int, int]:
+        """Returns the position of the forward cell."""
+        move = {
+            Direction.UP: (self.x, self.y - 1),
+            Direction.RIGHT: (self.x + 1, self.y),
+            Direction.DOWN: (self.x, self.y + 1),
+            Direction.LEFT: (self.x - 1, self.y),
+        }
+
+        return move[self.direction]
+
+    def cell_on_the_right(self) -> tuple[int, int]:
+        """Returns the position of the right cell."""
+        right_cell = {
+            Direction.UP: (self.x + 1, self.y),
+            Direction.RIGHT: (self.x, self.y + 1),
+            Direction.DOWN: (self.x - 1, self.y),
+            Direction.LEFT: (self.x, self.y - 1),
+        }
+        return right_cell[self.direction]
+
     @property
     def distinct_cell_visited(self) -> int:
         """Return how many cell has visited."""
         return len(self.visited_cell)
-
-    def turn_right(self) -> None:
-        """Turn the guard right 90 degree."""
-        logger.info(f"Turning right from {self.direction}")
-        if self.direction == Direction.UP:
-            self.direction = Direction.RIGHT
-        elif self.direction == Direction.LEFT:
-            self.direction = Direction.UP
-        elif self.direction == Direction.DOWN:
-            self.direction = Direction.LEFT
-        else:
-            self.direction = Direction.DOWN
-
-        logger.info(f"Now pointed to {self.direction}")
-
-    def whats_forward(self) -> tuple[int, int]:
-        """Returns the position of the forward cell."""
-        if self.direction == Direction.UP:
-            return self.x, self.y - 1
-        elif self.direction == Direction.LEFT:
-            return self.x - 1, self.y
-        elif self.direction == Direction.DOWN:
-            return self.x, self.y + 1
-        else:
-            return self.x + 1, self.y
-
-    def whats_on_the_right(self) -> tuple[int, int]:
-        """Returns the position of the right cell."""
-        if self.direction == Direction.UP:
-            return self.x + 1, self.y
-        elif self.direction == Direction.LEFT:
-            return self.x, self.y + 1
-        elif self.direction == Direction.DOWN:
-            return self.x - 1, self.y
-        else:
-            return self.x, self.y - 1
 
 
 def first_question() -> None:
@@ -138,9 +136,12 @@ def _find_the_guard(map: Map) -> tuple[int, int]:
     return row, col
 
 
-def _get_cell_from(map: Map, x: int, y: int) -> str:
+def _get_cell_from(_map: Map, x: int, y: int) -> str:
     """Get the cell for a given position."""
-    return list(map[y])[x]
+    try:
+        return list(_map[y])[x]
+    except IndexError:
+        return BLOCKED
 
 
 def _move_the(guard: Guard, map: Map) -> None:
@@ -150,30 +151,41 @@ def _move_the(guard: Guard, map: Map) -> None:
      - turn right if cannot proceed further
      - exit the map if unable to move forward or turn right
     """
-    forward_cell = guard.whats_forward()
-    forward_free = _get_cell_from(map, *forward_cell) == FREE
-    right_cell = guard.whats_on_the_right()
-    right_free = _get_cell_from(map, *right_cell) == FREE
+    forward_cell = guard.cell_ahead()
+    forward_free = _get_cell_from(map, *forward_cell) != BLOCKED
+    right_cell = guard.cell_on_the_right()
+    right_free = _get_cell_from(map, *right_cell) != BLOCKED
 
     while forward_free or right_free:
         if forward_free:
             guard.move_forward()
         else:
             guard.turn_right()
-        forward_cell = guard.whats_forward()
-        right_cell = guard.whats_on_the_right()
+        forward_cell = guard.cell_ahead()
+        right_cell = guard.cell_on_the_right()
 
         try:
             forward_free = _get_cell_from(map, *forward_cell) != BLOCKED
         except IndexError:
             # reached the border of the map
+            logger.exception("Hit the border!")
             forward_free = False
 
         try:
             right_free = _get_cell_from(map, *right_cell) != BLOCKED
         except IndexError:
             # reached the border of the map
-            right_free = False
+            logger.warning("Hit the border!")
+            forward_free = False
+
+    logger.info(f"Current cell ({guard.x}, {guard.y}), looking {guard.direction}.")
+    try:
+        logger.info(
+            f"Cell ahead: {forward_cell=} {_get_cell_from(map, *forward_cell)}, "
+            f"cell on the right {right_cell=} {_get_cell_from(map, *right_cell)}"
+        )
+    except IndexError:
+        logger.info("Hit the border!")
 
 
 def _count_the_visited_cells(guard: Guard, map: Map) -> int:
@@ -185,3 +197,4 @@ if __name__ == "__main__":
     main()
 
 # > 2161
+# < 5552
