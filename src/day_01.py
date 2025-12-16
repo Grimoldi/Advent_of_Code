@@ -1,64 +1,134 @@
-import os
+import sys
+
+from loguru import logger
 
 import data_loader
 
-DAY = os.path.basename(__file__).split(".")[0]
-FILENAME = "01_first"
+FILENAME = "01_input"
+LEFT = "L"
+RIGHT = "R"
+
+logger.remove()
+logger.add(
+    sys.stdout,
+    colorize=True,
+    level="DEBUG",
+)
 
 
-def first_question() -> None:
+def first_question(filename=FILENAME) -> None:
     """Function to solve the first question."""
-    print(
-        "First question answer. "
-        f"The total distance is: {_find_total_distance(FILENAME)}"
-    )
+    instructions = data_loader.load_input_data(filename)
+    counted_zeros = _rotate_dial(instructions)
+
+    print(f"First question answer. The counted number of '0' is: {counted_zeros}")
 
 
-def second_question() -> None:
+def second_question(filename=FILENAME) -> None:
     """Function to solve the second question."""
-    print(
-        "Second question answer. "
-        f"The total similarity score is: {_find_total_similarity_score(FILENAME)}"
-    )
+    instructions = data_loader.load_input_data(filename)
+    counted_zeros = _rotate_dial_secure_password(instructions)
+
+    print(f"Second question answer. The counted number of '0' is: {counted_zeros}")
 
 
-def _build_data(filename: str) -> tuple[list[int], list[int]]:
-    """From the input file, build the data to work with."""
-    raw_data = data_loader.load_input_data(filename)
-    first_half: list[int] = list()
-    second_half: list[int] = list()
-    for line in raw_data:
-        first_col, second_col = line.split()
-        first_half.append(int(first_col))
-        second_half.append(int(second_col))
+def _rotate_dial(
+    instructions: list[str],
+    starting_number: int = 50,
+) -> int:
+    """Rotate the dial according to the instruction, return the number of time 0 is hit."""
+    zeros = 0
+    logger.debug(f"Starting at {starting_number}.")
+    dial_number = starting_number
 
-    return (sorted(first_half), sorted(second_half))
+    for instruction in instructions:
+        direction, delta = _get_detailed_instruction(instruction)
+
+        if direction == "L":
+            _, dial_number = _turn_left(dial_number, delta)
+        else:
+            _, dial_number = _turn_rigt(dial_number, delta)
+
+        if dial_number == 0:
+            zeros += 1
+
+        logger.debug(
+            f"Dial is now at {dial_number}, counted {zeros} 0, last instruction was {instruction}."
+        )
+
+    return zeros
 
 
-def _find_total_distance(filename: str) -> int:
-    """Given the raw data file, find the total distance."""
-    left_col, right_col = _build_data(filename)
-    distance_sum = 0
-    for left_digit, right_digit in zip(left_col, right_col):
-        distance_sum += abs(left_digit - right_digit)
+def _rotate_dial_secure_password(
+    instructions: list[str],
+    starting_number: int = 50,
+) -> int:
+    """Rotate the dial according to the instruction, return the number of time 0 is hit."""
+    zeros = 0
+    logger.debug(f"Starting at {starting_number}.")
+    dial_number = starting_number
 
-    return distance_sum
+    for index, instruction in enumerate(instructions):
+        direction, delta = _get_detailed_instruction(instruction)
+        starting_dial = dial_number
+
+        if direction == "L":
+            counted_zero_dialing, dial_number = _turn_left(dial_number, delta)
+        else:
+            counted_zero_dialing, dial_number = _turn_rigt(dial_number, delta)
+
+        zeros += counted_zero_dialing
+        if dial_number == 0:
+            zeros += 1
+
+        logger.debug(
+            f"After instruction {index}: dial started at {starting_dial}, after {instruction} is now at {dial_number}; till now counted {zeros} '0'."
+        )
+
+    return zeros
 
 
-def _find_total_similarity_score(filename: str) -> int:
-    """Given the raw data file, find the total similarity."""
-    left_col, right_col = _build_data(filename)
-    similarity_score = 0
-    for digit in left_col:
-        occurrence = right_col.count(digit)
-        similarity_score += digit * occurrence
+def _get_detailed_instruction(instruction: str) -> tuple[str, int]:
+    """Separate the direction from the number."""
+    direction = instruction[0]
+    delta = instruction[1:]
 
-    return similarity_score
+    return (direction, int(delta))
+
+
+def _turn_left(starting: int, delta: int) -> tuple[int, int]:
+    """Turn the dial left (subtract)."""
+    ending = starting - delta
+    zeros = 0
+    # don't count first increment if starting from 0
+    if starting == 0:
+        zeros -= 1
+
+    while ending < 0:
+        ending += 100
+        zeros += 1
+
+    return zeros, ending
+
+
+def _turn_rigt(starting: int, delta: int) -> tuple[int, int]:
+    """Turn the dial right (add)."""
+    ending = starting + delta
+    zeros = 0
+    while ending > 100:
+        ending -= 100
+        zeros += 1
+
+    if ending == 100:
+        ending = 0
+
+    return zeros, ending
 
 
 def main() -> None:
-    first_question()
+    # first_question()
     second_question()
+    # 7243 too high
 
 
 if __name__ == "__main__":
