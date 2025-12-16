@@ -17,4 +17,12 @@
     "python.testing.cwd": "${workspaceFolder}/test",
     "python.testing.pytestPath": "${workspaceFolder}/.venv/Scripts/pytest",
     "python.testing.autoTestDiscoverOnSaveEnabled": true,
+
+
+    // color
+    "workbench.colorCustomizations": {
+        "titleBar.activeBackground": "#352775" // Change this color!
+    },
+    "window.titleBarStyle": "custom",
+    "workbench.sideBar.location": "right"
 }
